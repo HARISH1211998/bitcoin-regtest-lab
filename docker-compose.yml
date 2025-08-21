@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  node1:
+    image: ruimarinho/bitcoin-core:latest
+    container_name: btc-node1
+    restart: unless-stopped
+    environment:
+      BITCOIN_RPC_USER: ${BITCOIN_RPC_USER}
+      BITCOIN_RPC_PASSWORD: ${BITCOIN_RPC_PASSWORD}
+    command:
+      - -regtest=1
+      - -server=1
+      - -txindex=1
+      - -rpcallowip=0.0.0.0/0
+      - -rpcbind=0.0.0.0
+      - -rpcuser=${BITCOIN_RPC_USER}
+      - -rpcpassword=${BITCOIN_RPC_PASSWORD}
+      - -fallbackfee=0.0002
+      - -port=18444
+      - -rpcport=18443
+      - -printtoconsole=1
+    ports:
+      - "18443:18443"   # RPC
+      - "18444:18444"   # P2P
+    volumes:
+      - node1:/home/bitcoin/.bitcoin
+
+  node2:
+    image: ruimarinho/bitcoin-core:latest
+    container_name: btc-node2
+    restart: unless-stopped
+    environment:
+      BITCOIN_RPC_USER: ${BITCOIN_RPC_USER}
+      BITCOIN_RPC_PASSWORD: ${BITCOIN_RPC_PASSWORD}
+    command:
+      - -regtest=1
+      - -server=1
+      - -txindex=1
+      - -rpcallowip=0.0.0.0/0
+      - -rpcbind=0.0.0.0
+      - -rpcuser=${BITCOIN_RPC_USER}
+      - -rpcpassword=${BITCOIN_RPC_PASSWORD}
+      - -fallbackfee=0.0002
+      - -port=19444
+      - -rpcport=19443
+      - -printtoconsole=1
+    ports:
+      - "19443:19443"
+      - "19444:19444"
+    volumes:
+      - node2:/home/bitcoin/.bitcoin
+
+volumes:
+  node1: {}
+  node2: {}

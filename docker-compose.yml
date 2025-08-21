@@ -1,33 +1,41 @@
-version: "3.8"
-
 services:
   node1:
-    image: ruimarinho/bitcoin-core:24.0
+    image: ruimarinho/bitcoin-core:22.0
     container_name: node1
     command:
       - -regtest
-      - -conf=/bitcoin.conf
+      - -conf=/etc/bitcoin/bitcoin.conf
+      - -datadir=/home/bitcoin/.bitcoin
     volumes:
-      - ./node1/bitcoin.conf:/bitcoin.conf
+      - ./node1/bitcoin.conf:/etc/bitcoin/bitcoin.conf:ro
+      - node1-data:/home/bitcoin/.bitcoin
+    ports:
+      - "18443:18443"   # RPC
+      - "18444:18444"   # P2P
     networks:
       - bitcoin
-    environment:
-      - RPC_USER=${RPC_USER}
-      - RPC_PASSWORD=${RPC_PASSWORD}
 
   node2:
-    image: ruimarinho/bitcoin-core:24.0
+    image: ruimarinho/bitcoin-core:22.0
     container_name: node2
     command:
       - -regtest
-      - -conf=/bitcoin.conf
+      - -conf=/etc/bitcoin/bitcoin.conf
+      - -datadir=/home/bitcoin/.bitcoin
     volumes:
-      - ./node2/bitcoin.conf:/bitcoin.conf
+      - ./node2/bitcoin.conf:/etc/bitcoin/bitcoin.conf:ro
+      - node2-data:/home/bitcoin/.bitcoin
+    depends_on:
+      - node1
+    ports:
+      - "18445:18445"   # RPC
+      - "18446:18446"   # P2P
     networks:
       - bitcoin
-    environment:
-      - RPC_USER=${RPC_USER}
-      - RPC_PASSWORD=${RPC_PASSWORD}
+
+volumes:
+  node1-data:
+  node2-data:
 
 networks:
   bitcoin:

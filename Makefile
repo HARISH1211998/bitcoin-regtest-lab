@@ -1,19 +1,23 @@
-.PHONY: up send down logs n1 n2
+NODE1_RPC_USER=user1
+NODE1_RPC_PASSWORD=pass1
+NODE2_RPC_USER=user2
+NODE2_RPC_PASSWORD=pass2
 
 up:
-	./scripts/up.sh
-
-send:
-	./scripts/send_tx.sh
+	@docker compose up -d
 
 down:
-	./scripts/down.sh
+	@docker compose down -v
 
 logs:
-	docker compose logs -f
+	@docker compose logs -f
 
-n1:
-	docker exec -it btc-node1 bash
+setup:
+	@NODE1_RPC_USER=$(NODE1_RPC_USER) NODE1_RPC_PASSWORD=$(NODE1_RPC_PASSWORD) \
+	 NODE2_RPC_USER=$(NODE2_RPC_USER) NODE2_RPC_PASSWORD=$(NODE2_RPC_PASSWORD) \
+	 bash scripts/setup.sh
 
-n2:
-	docker exec -it btc-node2 bash
+tx:
+	@NODE1_RPC_USER=$(NODE1_RPC_USER) NODE1_RPC_PASSWORD=$(NODE1_RPC_PASSWORD) \
+	 NODE2_RPC_USER=$(NODE2_RPC_USER) NODE2_RPC_PASSWORD=$(NODE2_RPC_PASSWORD) \
+	 bash scripts/transaction.sh

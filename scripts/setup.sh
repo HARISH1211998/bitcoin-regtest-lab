@@ -1,19 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "[*] Starting regtest network..."
-docker-compose up -d
+echo "[*] Creating wallet on node1..."
+docker exec node1 bitcoin-cli -regtest \
+  -rpcuser="$NODE1_RPC_USER" -rpcpassword="$NODE1_RPC_PASSWORD" -rpcport=18443 \
+  createwallet "wallet1" || true
 
-echo "[*] Waiting for nodes..."
-./scripts/wait-for-node.sh node1
-./scripts/wait-for-node.sh node2
+echo "[*] Creating wallet on node2..."
+docker exec node2 bitcoin-cli -regtest \
+  -rpcuser="$NODE2_RPC_USER" -rpcpassword="$NODE2_RPC_PASSWORD" -rpcport=18445 \
+  createwallet "wallet2" || true
 
-# Connect node2 → node1
-NODE1_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' node1)
-docker exec node2 bitcoin-cli -regtest -rpcuser=$RPC_USER -rpcpassword=$RPC_PASSWORD addnode $NODE1_IP:18444 onetry
+echo "[*] Pre-mining 101 blocks on node1..."
+ADDR=$(docker exec node1 bitcoin-cli -regtest \
+  -rpcuser="$NODE1_RPC_USER" -rpcpassword="$NODE1_RPC_PASSWORD" -rpcport=18443 getnewaddress)
 
-# Mine blocks
-ADDR1=$(docker exec node1 bitcoin-cli -regtest -rpcuser=$RPC_USER -rpcpassword=$RPC_PASSWORD getnewaddress)
-docker exec node1 bitcoin-cli -regtest -rpcuser=$RPC_USER -rpcpassword=$RPC_PASSWORD generatetoaddress 101 $ADDR1
+docker exec node1 bitcoin-cli -regtest \
+  -rpcuser="$NODE1_RPC_USER" -rpcpassword="$NODE1_RPC_PASSWORD" -rpcport=18443 \
+  generatetoaddress 101 "$ADDR"
 
-echo "[*] Setup complete"
+echo "[*] Setup complete!"

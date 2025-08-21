@@ -1,12 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ADDR2=$(docker exec node2 bitcoin-cli -regtest -rpcuser=$RPC_USER -rpcpassword=$RPC_PASSWORD getnewaddress)
-docker exec node1 bitcoin-cli -regtest -rpcuser=$RPC_USER -rpcpassword=$RPC_PASSWORD sendtoaddress $ADDR2 10
+echo "[*] New address on node2..."
+ADDR=$(docker exec node2 bitcoin-cli -regtest \
+  -rpcuser="$NODE2_RPC_USER" -rpcpassword="$NODE2_RPC_PASSWORD" -rpcport=18445 getnewaddress)
 
-# Mine a block to confirm
-ADDR1=$(docker exec node1 bitcoin-cli -regtest -rpcuser=$RPC_USER -rpcpassword=$RPC_PASSWORD getnewaddress)
-docker exec node1 bitcoin-cli -regtest -rpcuser=$RPC_USER -rpcpassword=$RPC_PASSWORD generatetoaddress 1 $ADDR1
+echo "[*] Sending 10 BTC from node1 -> $ADDR"
+docker exec node1 bitcoin-cli -regtest \
+  -rpcuser="$NODE1_RPC_USER" -rpcpassword="$NODE1_RPC_PASSWORD" -rpcport=18443 \
+  sendtoaddress "$ADDR" 10
 
-BALANCE=$(docker exec node2 bitcoin-cli -regtest -rpcuser=$RPC_USER -rpcpassword=$RPC_PASSWORD getbalance)
-echo "[*] Node2 balance: $BALANCE BTC"
+echo "[*] Mining 1 block on node1..."
+ADDR=$(docker exec node1 bitcoin-cli -regtest -rpcuser="$NODE1_RPC_USER" -rpcpassword="$NODE1_RPC_PASSWORD" -rpcport=18443 getnewaddress)
+docker exec node1 bitcoin-cli -regtest -rpcuser="$NODE1_RPC_USER" -rpcpassword="$NODE1_RPC_PASSWORD" -rpcport=18443 generatetoaddress 1 "$ADDR"
+
+echo "[*] Node2 balance:"
+docker exec node2 bitcoin-cli -regtest \
+  -rpcuser="$NODE2_RPC_USER" -rpcpassword="$NODE2_RPC_PASSWORD" -rpcport=18445 getbalance

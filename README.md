@@ -1,11 +1,22 @@
-# Bitcoin Regtest (2 nodes) with Docker + Bash
+# Bitcoin Regtest Lab (2 Nodes, Fully Automated)
 
-This project launches a private Bitcoin **regtest** network with **2 nodes**, pairs them, mines blocks, and sends at least one transaction from node1 → node2.
+This repo spins up a **private Bitcoin regtest** network with **two nodes**, pairs them, mines blocks, and sends a transaction — **fully automated** (no manual RPC typing). Works **locally** and in **GitHub Actions**.
 
-## Quick start
+## Features
+
+- 2 Bitcoin Core nodes in Docker
+- Regtest forced (`-regtest`), cookie RPC auth (no secrets committed)
+- Node2 auto-connects to Node1
+- Idempotent scripts: create wallets if missing
+- Parameterized mining & transaction amounts
+- CI workflow with `workflow_dispatch` inputs and environment separation (dev/prod)
+
+---
+
+## Quick Start (Local)
+
+### 1) Clone & setup
 
 ```bash
-cp .env.example .env   # set your local values
-make up                # start nodes, pair, mine, send first tx
-make send              # send another tx (new tx each time)
-make down              # stop and clean
+git clone <your-repo-url> <working dif>
+cp .env.example .env   

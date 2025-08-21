@@ -77,14 +77,16 @@ make setup
 ```bash
 make tx
 ```
+7. View logs
+```bash
+make logs
+```
+8. Tear down
+```bash
+make down
+```
 
 Notes
 The setup is idempotent: you can run the scripts multiple times to create new transactions.
 CI/CD is implemented using GitHub Actions, automatically building the environment, running setup, and validating transactions.
 Secrets and RPC credentials are configurable via .env or GitHub workflow inputs.
-
-7. View logs
-make logs
-
-8. Tear down
-make down

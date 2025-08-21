@@ -6,30 +6,32 @@ services:
       - -regtest
       - -conf=/etc/bitcoin/bitcoin.conf
       - -datadir=/home/bitcoin/.bitcoin
+      - -printtoconsole
     volumes:
       - ./node1/bitcoin.conf:/etc/bitcoin/bitcoin.conf:ro
       - node1-data:/home/bitcoin/.bitcoin
     ports:
-      - "18443:18443"   # RPC
-      - "18444:18444"   # P2P
+      - "18443:18443"
+      - "18444:18444"
     networks:
       - bitcoin
 
   node2:
     image: ruimarinho/bitcoin-core:22.0
     container_name: node2
+    depends_on:
+      - node1
     command:
       - -regtest
       - -conf=/etc/bitcoin/bitcoin.conf
       - -datadir=/home/bitcoin/.bitcoin
+      - -printtoconsole
     volumes:
       - ./node2/bitcoin.conf:/etc/bitcoin/bitcoin.conf:ro
       - node2-data:/home/bitcoin/.bitcoin
-    depends_on:
-      - node1
     ports:
-      - "18445:18445"   # RPC
-      - "18446:18446"   # P2P
+      - "18445:18445"
+      - "18446:18446"
     networks:
       - bitcoin
 

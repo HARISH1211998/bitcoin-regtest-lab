@@ -2,7 +2,7 @@ name: Bitcoin Regtest CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
     inputs:
       node1_user:
@@ -27,20 +27,34 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      NODE1_RPC_USER: ${{ github.event.inputs.node1_user || secrets.NODE1_RPC_USER }}
-      NODE1_RPC_PASSWORD: ${{ github.event.inputs.node1_pass || secrets.NODE1_RPC_PASSWORD }}
-      NODE2_RPC_USER: ${{ github.event.inputs.node2_user || secrets.NODE2_RPC_USER }}
-      NODE2_RPC_PASSWORD: ${{ github.event.inputs.node2_pass || secrets.NODE2_RPC_PASSWORD }}
+      NODE1_RPC_USER: ${{ github.event.inputs.node1_user != '' && github.event.inputs.node1_user || secrets.NODE1_RPC_USER }}
+      NODE1_RPC_PASSWORD: ${{ github.event.inputs.node1_pass != '' && github.event.inputs.node1_pass || secrets.NODE1_RPC_PASSWORD }}
+      NODE2_RPC_USER: ${{ github.event.inputs.node2_user != '' && github.event.inputs.node2_user || secrets.NODE2_RPC_USER }}
+      NODE2_RPC_PASSWORD: ${{ github.event.inputs.node2_pass != '' && github.event.inputs.node2_pass || secrets.NODE2_RPC_PASSWORD }}
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
+      - name: Generate bitcoin.conf files
+        run: bash scripts/generate-config.sh
+
       - name: Start Bitcoin nodes
         run: make up
+
+      - name: Wait for nodes to be ready
+        run: |
+          echo "Waiting for node1..."
+          until docker exec node1 bitcoin-cli -regtest -rpcuser=$NODE1_RPC_USER -rpcpassword=$NODE1_RPC_PASSWORD getblockchaininfo >/dev/null 2>&1; do
+            sleep 2
+          done
+          echo "Waiting for node2..."
+          until docker exec node2 bitcoin-cli -regtest -rpcuser=$NODE2_RPC_USER -rpcpassword=$NODE2_RPC_PASSWORD getblockchaininfo >/dev/null 2>&1; do
+            sleep 2
+          done
 
       - name: Run setup script
         run: make setup
@@ -48,10 +62,10 @@ jobs:
       - name: Run transaction test
         run: make tx
 
-      - name: Show logs
+      - name: Show logs on failure
         if: failure()
         run: make logs
 
-      - name: Tear down
+      - name: Tear down containers
         if: always()
         run: make down

@@ -1,23 +1,20 @@
-NODE1_RPC_USER=user1
-NODE1_RPC_PASSWORD=pass1
-NODE2_RPC_USER=user2
-NODE2_RPC_PASSWORD=pass2
+.PHONY: up down logs setup tx
 
 up:
-	@docker compose up -d
+	docker compose up -d
 
 down:
-	@docker compose down -v
+	docker compose down -v
 
 logs:
-	@docker compose logs -f
+	docker compose logs -f
 
 setup:
-	@NODE1_RPC_USER=$(NODE1_RPC_USER) NODE1_RPC_PASSWORD=$(NODE1_RPC_PASSWORD) \
-	 NODE2_RPC_USER=$(NODE2_RPC_USER) NODE2_RPC_PASSWORD=$(NODE2_RPC_PASSWORD) \
-	 bash scripts/setup.sh
+	@echo "[*] Generating bitcoin.conf files..."
+	@bash scripts/generate-config.sh
+	@echo "[*] Running setup..."
+	@bash scripts/setup.sh
 
 tx:
-	@NODE1_RPC_USER=$(NODE1_RPC_USER) NODE1_RPC_PASSWORD=$(NODE1_RPC_PASSWORD) \
-	 NODE2_RPC_USER=$(NODE2_RPC_USER) NODE2_RPC_PASSWORD=$(NODE2_RPC_PASSWORD) \
-	 bash scripts/transaction.sh
+	@echo "[*] Running transaction script..."
+	@bash scripts/transaction.sh

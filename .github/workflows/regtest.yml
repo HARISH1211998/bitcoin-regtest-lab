@@ -45,18 +45,7 @@ jobs:
       - name: Start Bitcoin nodes
         run: make up
 
-      - name: Wait for nodes to be ready
-        run: |
-          echo "Waiting for node1..."
-          until docker exec node1 bitcoin-cli -regtest -rpcuser=$NODE1_RPC_USER -rpcpassword=$NODE1_RPC_PASSWORD getblockchaininfo >/dev/null 2>&1; do
-            sleep 2
-          done
-          echo "Waiting for node2..."
-          until docker exec node2 bitcoin-cli -regtest -rpcuser=$NODE2_RPC_USER -rpcpassword=$NODE2_RPC_PASSWORD getblockchaininfo >/dev/null 2>&1; do
-            sleep 2
-          done
-
-      - name: Run setup script
+      - name: Run setup script (wallets + mining)
         run: make setup
 
       - name: Run transaction test

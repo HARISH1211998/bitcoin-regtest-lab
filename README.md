@@ -48,39 +48,43 @@ bitcoin-regtest-lab/
 
 
 ---
-Notes
-The setup is idempotent: you can run the scripts multiple times to create new transactions.
-CI/CD is implemented using GitHub Actions, automatically building the environment, running setup, and validating transactions.
-Secrets and RPC credentials are configurable via .env or GitHub workflow inputs.
-
-
 ## Getting Started
 
 ### 1. Clone the repo
 ```bash
 git clone https://github.com/HARISH1211998/bitcoin-regtest-lab.git
-cd bitcoin-regtest-lab
+cd bitcoin-regtest-lab 
+```
 
 2. Set environment variables
 
 Create a .env file:
-
+```bash
 NODE1_RPC_USER=user1
 NODE1_RPC_PASSWORD=pass1
 NODE2_RPC_USER=user2
 NODE2_RPC_PASSWORD=pass2
-
+```
 3. Build and run containers
+```bash   
 make up
-
-4. Setup wallets and pre-mine blocks
+```
+5. Setup wallets and pre-mine blocks
+```bash
 make setup
-
-5. Run transaction tests
+```
+6. Run transaction tests
+```bash
 make tx
+```
 
-6. View logs
+Notes
+The setup is idempotent: you can run the scripts multiple times to create new transactions.
+CI/CD is implemented using GitHub Actions, automatically building the environment, running setup, and validating transactions.
+Secrets and RPC credentials are configurable via .env or GitHub workflow inputs.
+
+7. View logs
 make logs
 
-7. Tear down
+8. Tear down
 make down

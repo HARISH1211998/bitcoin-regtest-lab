@@ -2,34 +2,33 @@ version: "3.8"
 
 services:
   node1:
-    image: ruimarinho/bitcoin-core:24
-    container_name: btc-node1
-    volumes:
-      - ./node1:/bitcoin
+    image: ruimarinho/bitcoin-core:24.0
+    container_name: node1
     command:
-      -printtoconsole -regtest -rpcallowip=0.0.0.0/0 -rpcbind=0.0.0.0
-      -rpcuser=${RPC_USER} -rpcpassword=${RPC_PASSWORD}
-      -port=18444 -rpcport=18443
-    environment:
-      RPC_USER: ${RPC_USER}
-      RPC_PASSWORD: ${RPC_PASSWORD}
+      - -regtest
+      - -conf=/bitcoin.conf
+    volumes:
+      - ./node1/bitcoin.conf:/bitcoin.conf
     networks:
-      - btcnet
+      - bitcoin
+    environment:
+      - RPC_USER=${RPC_USER}
+      - RPC_PASSWORD=${RPC_PASSWORD}
 
   node2:
-    image: ruimarinho/bitcoin-core:24
-    container_name: btc-node2
-    volumes:
-      - ./node2:/bitcoin
+    image: ruimarinho/bitcoin-core:24.0
+    container_name: node2
     command:
-      -printtoconsole -regtest -rpcallowip=0.0.0.0/0 -rpcbind=0.0.0.0
-      -rpcuser=${RPC_USER} -rpcpassword=${RPC_PASSWORD}
-      -port=19444 -rpcport=19443
-    environment:
-      RPC_USER: ${RPC_USER}
-      RPC_PASSWORD: ${RPC_PASSWORD}
+      - -regtest
+      - -conf=/bitcoin.conf
+    volumes:
+      - ./node2/bitcoin.conf:/bitcoin.conf
     networks:
-      - btcnet
+      - bitcoin
+    environment:
+      - RPC_USER=${RPC_USER}
+      - RPC_PASSWORD=${RPC_PASSWORD}
 
 networks:
-  btcnet:
+  bitcoin:
+    driver: bridge

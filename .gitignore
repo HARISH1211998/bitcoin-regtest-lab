@@ -1,0 +1,13 @@
+# editors
+.vscode/
+.idea/
+
+# env
+.env
+.env.*
+!.env.example
+
+# docker
+**/.DS_Store
+**/*.log
+**/node_modules

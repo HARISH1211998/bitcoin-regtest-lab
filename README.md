@@ -70,3 +70,7 @@ make logs
 
 7. Tear down
 make down
+
+Expected Output:<img width="859" height="328" alt="Screenshot 2025-08-22 at 12 35 16 AM" src="https://github.com/user-attachments/assets/0c160483-4cdb-46d2-96a9-c55fe192abea" />
+
+
